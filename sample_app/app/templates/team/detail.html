@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ member.first_name if member else '' }} {{ member.last_name if member else '' }} - Sample App{% endblock %}
+
+{% block content %}
+{% if not member %}
+    <div class="alert alert-error">Team member not found.</div>
+    <a href="{{ base_path }}/team">&larr; Back to Team Members</a>
+{% else %}
+<div class="page-header">
+    <h2>{{ member.first_name }} {{ member.last_name }}</h2>
+</div>
+
+{% if action_result %}
+<div class="alert alert-{{ 'success' if action_result.success else 'error' }}" role="alert">
+    {{ action_result.message }}
+    <button class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+</div>
+{% endif %}
+
+<section>
+    <h3>Details</h3>
+    <table>
+        <tr><td><strong>ID</strong></td><td>{{ member.id }}</td></tr>
+        <tr><td><strong>First Name</strong></td><td>{{ member.first_name }}</td></tr>
+        <tr><td><strong>Last Name</strong></td><td>{{ member.last_name }}</td></tr>
+        <tr><td><strong>Phone</strong></td><td>{{ member.phone_number }}</td></tr>
+        <tr><td><strong>Timezone</strong></td><td>{{ member.timezone or '--' }}</td></tr>
+        <tr>
+            <td><strong>Language</strong></td>
+            <td>{% if member.language == 'fr' %}French{% elif member.language == 'he' %}Hebrew{% else %}English{% endif %} ({{ member.language or 'en' }})</td>
+        </tr>
+        <tr>
+            <td><strong>Communication Channels</strong></td>
+            <td>
+                {% if channel_list %}
+                    {% for ch in channel_list %}<span class="badge badge-channel">{{ ch }}</span>{% endfor %}
+                {% else %}
+                    <em>WhatsApp (default)</em>
+                {% endif %}
+            </td>
+        </tr>
+        <tr><td><strong>Status</strong></td><td>{{ 'Active' if member.is_active else 'Inactive' }}</td></tr>
+        <tr><td><strong>Created</strong></td><td>{{ member.created_at }}</td></tr>
+    </table>
+</section>
+
+<section>
+    <h3>Edit</h3>
+    <form method="post" action="{{ base_path }}/team/{{ member.id }}/update">
+        <div class="grid">
+            <label>First Name <input type="text" name="first_name" value="{{ member.first_name }}"></label>
+            <label>Last Name <input type="text" name="last_name" value="{{ member.last_name }}"></label>
+        </div>
+
+        <label>Phone Number <input type="text" name="phone_number" value="{{ member.phone_number }}"></label>
+
+        <div class="grid">
+            <label>Timezone <input type="text" name="timezone" value="{{ member.timezone or '' }}" placeholder="e.g. Asia/Jerusalem"></label>
+            <label>
+                Language
+                <select name="language">
+                    <option value="en" {% if (member.language or 'en') == 'en' %}selected{% endif %}>English</option>
+                    <option value="fr" {% if member.language == 'fr' %}selected{% endif %}>French</option>
+                    <option value="he" {% if member.language == 'he' %}selected{% endif %}>Hebrew</option>
+                </select>
+            </label>
+        </div>
+
+        <fieldset>
+            <legend>Communication Channels (order = priority)</legend>
+            <p><small>Check channels to enable, drag to reorder priority. Top = tried first.</small></p>
+            <div id="channel-list" class="channel-priority-list" data-current="{{ member.communication_modes or '[]' }}">
+            </div>
+            <input type="hidden" name="communication_modes" id="communication-modes-json" value="{{ member.communication_modes or '[]' }}">
+        </fieldset>
+
+        <label>
+            Status
+            <select name="is_active">
+                <option value="true" {% if member.is_active %}selected{% endif %}>Active</option>
+                <option value="false" {% if not member.is_active %}selected{% endif %}>Inactive</option>
+            </select>
+        </label>
+
+        <button type="submit">Save Changes</button>
+    </form>
+</section>
+{% endif %}
+{% endblock %}

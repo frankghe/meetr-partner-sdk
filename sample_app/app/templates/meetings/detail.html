@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+
+{% block title %}Meeting Detail - Sample App{% endblock %}
+
+{% block content %}
+{% if not meeting %}
+    <div class="alert alert-error">Meeting not found.</div>
+    <a href="{{ base_path }}/meetings">&larr; Back to Meetings</a>
+{% else %}
+
+{% if action_result %}
+<div class="alert {{ 'alert-success' if action_result.success else 'alert-error' }}">
+    {{ action_result.message }}
+    <button class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+</div>
+{% endif %}
+
+<!-- Workflow Guide -->
+<div class="workflow-guide">
+    {% set steps = ['PENDING', 'COLLECTING', 'AWAITING_RESPONSES', 'SELECTING_SLOT', 'NEEDS_INTERVENTION', 'CONFIRMING', 'COMPLETED'] %}
+    {% set step_labels = {'PENDING': 'Create', 'COLLECTING': 'Outreach', 'AWAITING_RESPONSES': 'Collect', 'SELECTING_SLOT': 'Select Slot', 'NEEDS_INTERVENTION': 'Intervene', 'CONFIRMING': 'Notify', 'COMPLETED': 'Done'} %}
+    {% for step in steps %}
+    <div class="workflow-step {% if meeting.state == step %}active{% elif meeting.state in steps and steps.index(step) < steps.index(meeting.state) %}completed{% endif %}">
+        {{ step_labels[step] }}
+    </div>
+    {% if not loop.last %}<span class="workflow-arrow">&rarr;</span>{% endif %}
+    {% endfor %}
+</div>
+
+<!-- Header -->
+<div class="page-header" id="meeting-header"
+     hx-get="{{ base_path }}/meetings/{{ meeting_id }}" hx-select="#meeting-header" hx-swap="outerHTML"
+     hx-trigger="refresh from:body">
+    <div>
+        <h2>{{ meeting.meeting_title or meeting.meeting_purpose or meeting.purpose or '(untitled)' }}</h2>
+        <span class="badge badge-{{ meeting.state|lower }}">{{ meeting.state }}</span>
+    </div>
+</div>
+
+<div class="meeting-meta">
+    <span>Duration: {{ meeting.meeting_duration_minutes or 60 }} min</span>
+    {% set tz = meeting.timezone or (meeting.scheduling_window.timezone if meeting.scheduling_window else 'N/A') %}
+    <span>Timezone: {{ tz or 'N/A' }}</span>
+    {% set win_start = meeting.scheduling_window_start or (meeting.scheduling_window.start if meeting.scheduling_window else none) %}
+    {% set win_end = meeting.scheduling_window_end or (meeting.scheduling_window.end if meeting.scheduling_window else none) %}
+    {% if win_start %}
+    <span>Window: {{ win_start[:16] }} -- {{ win_end[:16] if win_end else '' }}</span>
+    {% endif %}
+    {% if meeting.max_scheduling_deadline %}
+    <span>Deadline: {{ meeting.max_scheduling_deadline[:16] }}</span>
+    {% endif %}
+</div>
+
+{% if meeting.context %}
+<details style="margin-bottom: 1rem;">
+    <summary>Context</summary>
+    <p>{{ meeting.context }}</p>
+</details>
+{% endif %}
+
+<!-- Selected Slot -->
+{% if meeting.selected_slot %}
+<div class="selected-slot-display">
+    <h4>Selected Slot</h4>
+    <p><strong>{{ meeting.selected_slot.start }}</strong> -- {{ meeting.selected_slot.end }}</p>
+</div>
+{% endif %}
+
+<!-- Action Bar -->
+{% if not meeting.is_terminal %}
+<div class="action-bar">
+    {% set state = meeting.state %}
+    {% if state in ['COLLECTING', 'AWAITING_RESPONSES'] %}
+    <form method="post" action="{{ base_path }}/meetings/{{ meeting_id }}/select-slot" style="display: inline;">
+        <button type="submit" class="secondary">Select Slot</button>
+    </form>
+    {% endif %}
+
+    {% if state in ['CONFIRMING', 'AWAITING_CONFIRMATIONS'] %}
+    <form method="post" action="{{ base_path }}/meetings/{{ meeting_id }}/notify" style="display: inline;">
+        <button type="submit" class="secondary">Send Notifications</button>
+    </form>
+    {% endif %}
+
+    <form method="post" action="{{ base_path }}/meetings/{{ meeting_id }}/cancel" style="display: inline; margin-left: auto;"
+          onsubmit="return confirm('Cancel this meeting?')">
+        <button type="submit" class="outline contrast">Cancel Meeting</button>
+    </form>
+</div>
+{% endif %}
+
+<!-- Intervention Form -->
+{% if meeting.state == 'NEEDS_INTERVENTION' %}
+<div class="intervention-section" style="margin: 1.5rem 0; padding: 1.5rem; border: 2px solid #f59e0b; border-radius: 8px; background: #fffbeb;">
+    <h4 style="color: #92400e; margin-top: 0;">&#9888; Scheduling Intervention Needed</h4>
+    {% set failure_notes = [] %}
+    {% for note in meeting.progress_notes or [] %}
+        {% if 'Slot selection failed' in note %}{% set _ = failure_notes.append(note) %}{% endif %}
+    {% endfor %}
+    {% if failure_notes %}
+    <p style="color: #78350f; margin-bottom: 1rem;">{{ failure_notes[-1] }}</p>
+    {% endif %}
+    <p style="color: #78350f; font-size: 0.9rem;">Describe how to resolve the scheduling conflict. Examples:</p>
+    <ul style="color: #78350f; font-size: 0.85rem; margin-bottom: 1rem;">
+        <li>"Extend the window by 3 days"</li>
+        <li>"Make Sarah optional"</li>
+        <li>"Remove Bob from the meeting"</li>
+        <li>"Reduce minimum participants to 2"</li>
+        <li>"Shorten the meeting to 30 minutes"</li>
+    </ul>
+    <form method="post" action="{{ base_path }}/meetings/{{ meeting_id }}/intervene">
+        <textarea name="intervention_message" rows="3" placeholder="Describe what to change..." required
+                  style="width: 100%; margin-bottom: 0.5rem;"></textarea>
+        <button type="submit">Apply Intervention</button>
+    </form>
+</div>
+{% endif %}
+
+<!-- Participant Cards -->
+<h3>Participants</h3>
+<div id="participant-cards"
+     hx-get="{{ base_path }}/partials/participant-cards/{{ meeting_id }}" hx-swap="innerHTML"
+     hx-trigger="refresh from:body">
+    {% include "partials/participant_cards.html" %}
+</div>
+
+<!-- Progress Notes -->
+{% if meeting.progress_notes %}
+<details open style="margin-top: 1rem;">
+    <summary><strong>Progress Log ({{ meeting.progress_notes|length }})</strong></summary>
+    <ul class="progress-notes">
+        {% for note in meeting.progress_notes|reverse %}
+        <li>{{ note }}</li>
+        {% endfor %}
+    </ul>
+</details>
+{% endif %}
+
+<!-- SSE Event Log -->
+<div id="event-log-section" style="margin-top: 2rem;">
+    <h3>Event Log <span id="sse-status" class="badge" style="font-size: 0.7rem;">disconnected</span></h3>
+    <div id="event-log" class="event-log">
+        {% include "partials/event_log.html" %}
+    </div>
+</div>
+
+{% if not meeting.is_terminal %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        connectSSE('{{ meeting_id }}', '{{ base_path }}');
+    });
+</script>
+{% endif %}
+
+<div style="margin-top: 2rem; display: flex; gap: 1rem; align-items: center;">
+    <a href="{{ base_path }}/meetings">&larr; Back to Meetings</a>
+    <a href="{{ base_path }}/meetings/new?from={{ meeting_id }}" role="button" class="secondary outline" style="font-size: 0.85rem;">Create From This Meeting</a>
+</div>
+
+{% endif %}
+{% endblock %}

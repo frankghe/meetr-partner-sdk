@@ -1,0 +1,13 @@
+{% for m in members %}
+<tr>
+    <td><a href="{{ base_path }}/team/{{ m.id }}">{{ m.first_name }} {{ m.last_name }}</a></td>
+    <td>{{ m.phone_number }}</td>
+    <td>{{ m.timezone or '--' }}</td>
+    <td>{{ m.language or 'en' }}</td>
+    <td>{{ 'Active' if m.is_active else 'Inactive' }}</td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="5" style="text-align: center;">No team members yet. <a href="{{ base_path }}/team/new">Add one</a>.</td>
+</tr>
+{% endfor %}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Sample App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ base_path }}/static/pico.min.css">
+    <link rel="stylesheet" href="{{ base_path }}/static/app.css">
+    <script src="{{ base_path }}/static/htmx.min.js"></script>
+    <script src="{{ base_path }}/static/app.js" defer></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="brand">Sample App</div>
+            <div class="user-info">
+                {{ request.session.get('user_name', '') }}
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ base_path }}/" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+                    <li><a href="{{ base_path }}/team" class="{% if active_page == 'team' %}active{% endif %}">Team Members</a></li>
+                    <li><a href="{{ base_path }}/meetings" class="{% if active_page == 'meetings' %}active{% endif %}">Meetings</a></li>
+                    <li><a href="{{ base_path }}/settings" class="{% if active_page == 'settings' %}active{% endif %}">Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="admin-content">
+            {% if error %}
+            <div class="alert alert-error" role="alert">
+                {{ error }}
+                <button class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+            {% endif %}
+            {% if success %}
+            <div class="alert alert-success" role="alert">
+                {{ success }}
+                <button class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <div class="admin-statusbar">
+        <span>{{ request.session.get('user_name', 'Not logged in') }}</span>
+        <span style="margin-left: auto;">
+            <form method="post" action="{{ base_path }}/logout" style="display: inline;">
+                <button type="submit" class="link-button">Logout</button>
+            </form>
+        </span>
+    </div>
+</body>
+</html>

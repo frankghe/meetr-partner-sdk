@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - Sample App{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Dashboard</h2>
+    <a href="{{ base_path }}/meetings/new" role="button">New Meeting</a>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid" hx-get="{{ base_path }}/partials/dashboard-stats" hx-trigger="every 30s" hx-swap="innerHTML">
+    {% include "partials/dashboard_stats.html" %}
+</div>
+
+<!-- Recent Meetings -->
+<section style="margin-top: 2rem;">
+    <h3>Recent Meetings</h3>
+    {% if recent_meetings %}
+    <table role="grid">
+        <thead>
+            <tr>
+                <th>Purpose</th>
+                <th>State</th>
+                <th>Participants</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in recent_meetings %}
+            <tr style="cursor: pointer;" onclick="window.location='{{ base_path }}/meetings/{{ m.session_id }}'">
+                <td>{{ m.meeting_title or m.purpose or '(untitled)' }}</td>
+                <td><span class="badge badge-{{ m.state|lower }}">{{ m.state }}</span></td>
+                <td>{{ m.participants|length if m.participants else 0 }}</td>
+                <td>{{ m.created_at[:16] if m.created_at else '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p><em>No meetings yet. <a href="{{ base_path }}/meetings/new">Create your first meeting</a>.</em></p>
+    {% endif %}
+</section>
+{% endblock %}

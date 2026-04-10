@@ -1,0 +1,17 @@
+{% if meetings %}
+    {% for m in meetings %}
+    <tr style="cursor: pointer;" onclick="window.location='{{ base_path }}/meetings/{{ m.session_id }}'">
+        <td>{{ m.meeting_title or m.purpose or '(untitled)' }}</td>
+        <td><span class="badge badge-{{ m.state|lower }}">{{ m.state }}</span></td>
+        <td>{{ m.participants_count or 0 }}</td>
+        <td>
+            {% if m.scheduling_window_start %}
+                {{ m.scheduling_window_start[:10] }} -- {{ m.scheduling_window_end[:10] if m.scheduling_window_end else '' }}
+            {% endif %}
+        </td>
+        <td>{{ m.customer_name or '--' }}</td>
+    </tr>
+    {% endfor %}
+{% else %}
+    <tr><td colspan="5"><em>No meetings found.</em></td></tr>
+{% endif %}

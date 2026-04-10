@@ -1,0 +1,51 @@
+{% set participants = meeting.get('participants', []) if meeting else [] %}
+{% if participants %}
+<div class="participant-grid">
+    {% for p in participants %}
+    <div class="participant-card">
+        <div class="participant-header">
+            <strong>{{ p.first_name }} {{ p.last_name }}</strong>
+            <span class="badge badge-priority-{{ p.priority|default(3) }}">P{{ p.priority|default(3) }}</span>
+        </div>
+        <div class="participant-details">
+            <div>Phone: {{ p.phone_number }}</div>
+            {% if p.communication_modes %}
+            <div>Channels: {% for ch in p.communication_modes %}{% if ch == p.channel %}<strong>{{ ch }}</strong>{% else %}{{ ch }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            {% elif p.channel %}
+            <div>Channel: <strong>{{ p.channel }}</strong></div>
+            {% endif %}
+            <div>Outreach: <span class="badge badge-{{ (p.outreach_status or 'none')|lower }}">{{ p.outreach_status or 'None' }}</span></div>
+            {% if p.confirmation_status %}
+            <div>Confirmation: <span class="badge">{{ p.confirmation_status }}</span></div>
+            {% endif %}
+            {% if p.availability_slots %}
+            <details>
+                <summary>{{ p.availability_slots|length }} slot(s) collected</summary>
+                <ul>
+                    {% for slot in p.availability_slots %}
+                    <li>{{ slot.start if slot.start is defined else slot }}</li>
+                    {% endfor %}
+                </ul>
+            </details>
+            {% endif %}
+        </div>
+        <div class="participant-actions">
+            {% set os = (p.outreach_status or '')|upper %}
+            {% if os in ['', 'NONE', 'NOT_STARTED'] %}
+            <form method="post" action="{{ base_path }}/meetings/{{ meeting_id }}/outreach/{{ p.id or p.participant_id }}/start" style="display: inline;">
+                <button type="submit" class="small">Start Outreach</button>
+            </form>
+            {% endif %}
+            {% if os in ['IN_PROGRESS', 'INITIATED', 'STARTED', 'ACTIVE'] %}
+            <form method="post" action="{{ base_path }}/meetings/{{ meeting_id }}/outreach/{{ p.id or p.participant_id }}/force-fail" style="display: inline;"
+                  onsubmit="return confirm('Force-fail outreach for {{ p.first_name }}?')">
+                <button type="submit" class="small outline contrast">Force Fail</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p><em>No participants.</em></p>
+{% endif %}

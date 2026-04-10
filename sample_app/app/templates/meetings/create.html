@@ -1,0 +1,134 @@
+{% extends "layout.html" %}
+
+{% block title %}New Meeting - Sample App{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Create Meeting</h2>
+</div>
+
+<form method="post" action="{{ base_path }}/meetings">
+    <div class="grid">
+        <label>
+            Purpose *
+            <input type="text" name="purpose" value="{{ form.get('purpose', '') }}" required>
+        </label>
+        <label>
+            Requester
+            <input type="text" name="requester" value="{{ form.get('requester', '') }}" placeholder="{{ user.display_name }}">
+        </label>
+    </div>
+
+    <label>
+        Context
+        <textarea name="context" rows="3">{{ form.get('context', '') }}</textarea>
+    </label>
+
+    <div class="grid">
+        <label>
+            Window Start *
+            <input type="datetime-local" name="scheduling_window_start" value="{{ form.get('scheduling_window_start', '') }}" required>
+        </label>
+        <label>
+            Window End *
+            <input type="datetime-local" name="scheduling_window_end" value="{{ form.get('scheduling_window_end', '') }}" required>
+        </label>
+    </div>
+
+    <div class="grid">
+        <label>
+            Timezone
+            <input type="text" name="timezone" value="{{ form.get('timezone', 'Asia/Jerusalem') }}">
+        </label>
+        <label>
+            Duration (min)
+            <input type="number" name="meeting_duration_minutes" value="{{ form.get('meeting_duration_minutes', '60') }}" min="15" step="15">
+        </label>
+        <label>
+            Max Deadline
+            <input type="datetime-local" name="max_scheduling_deadline" value="{{ form.get('max_scheduling_deadline', '') }}">
+        </label>
+    </div>
+
+    <div class="grid">
+        <label>
+            External ID
+            <input type="text" name="external_id" value="{{ form.get('external_id', '') }}" placeholder="Optional">
+        </label>
+        <label>
+            Callback URL
+            <input type="url" name="client_callback_url" value="{{ form.get('client_callback_url', '') }}" placeholder="Optional">
+        </label>
+        <label>
+            Min Participants
+            <input type="number" name="min_participants_required" value="{{ form.get('min_participants_required', '') }}" placeholder="All" min="1">
+        </label>
+    </div>
+
+    <div class="grid">
+        <label>
+            Manager
+            <select name="manager_id">
+                <option value="">-- None --</option>
+                {% for tm in team_members %}
+                <option value="{{ tm.id }}" {{ 'selected' if form.get('manager_id') == tm.id|string else '' }}>
+                    {{ tm.first_name }} {{ tm.last_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Intervention Notification
+            <select name="intervention_notification">
+                <option value="callback" {{ 'selected' if form.get('intervention_notification') == 'callback' else '' }}>Callback only</option>
+                <option value="outreach" {{ 'selected' if form.get('intervention_notification') == 'outreach' else '' }}>Outreach to manager</option>
+                <option value="both" {{ 'selected' if form.get('intervention_notification') == 'both' else '' }}>Both</option>
+            </select>
+        </label>
+    </div>
+
+    <hr>
+
+    <h3>Team Members</h3>
+    {% if team_members %}
+    <p><small>Select team members to include in this meeting and set their priority.</small></p>
+    <table role="grid">
+        <thead>
+            <tr>
+                <th style="width: 3rem;"></th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tm in team_members %}
+            {% if tm.is_active %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="member_ids" value="{{ tm.id }}"
+                           {% if form is defined and form.getlist is defined and tm.id|string in form.getlist('member_ids') %}checked{% endif %}>
+                </td>
+                <td>{{ tm.first_name }} {{ tm.last_name }}</td>
+                <td>{{ tm.phone_number }}</td>
+                <td>
+                    <select name="priority_{{ tm.id }}" style="margin-bottom: 0;">
+                        <option value="1">1 - Critical</option>
+                        <option value="2">2 - High</option>
+                        <option value="3" selected>3 - Normal</option>
+                        <option value="4">4 - Low</option>
+                        <option value="5">5 - Optional</option>
+                    </select>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p><em>No team members yet. <a href="{{ base_path }}/team/new">Add team members</a> first.</em></p>
+    {% endif %}
+
+    <button type="submit">Create Meeting</button>
+</form>
+{% endblock %}

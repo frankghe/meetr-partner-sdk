@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}New Team Member - Sample App{% endblock %}
+
+{% block content %}
+<h2>New Team Member</h2>
+
+<form method="post" action="{{ base_path }}/team">
+    <div class="grid">
+        <label>
+            First Name <span class="required">*</span>
+            <input type="text" name="first_name" value="{{ form.get('first_name', '') }}" required placeholder="First name">
+        </label>
+        <label>
+            Last Name <span class="required">*</span>
+            <input type="text" name="last_name" value="{{ form.get('last_name', '') }}" required placeholder="Last name">
+        </label>
+    </div>
+
+    <label>
+        Phone Number <span class="required">*</span>
+        <input type="text" name="phone_number" value="{{ form.get('phone_number', '') }}" required placeholder="+1234567890">
+    </label>
+
+    <div class="grid">
+        <label>
+            Timezone
+            <input type="text" name="timezone" value="{{ form.get('timezone', '') }}" placeholder="e.g. Asia/Jerusalem">
+        </label>
+        <label>
+            Language
+            <select name="language">
+                <option value="en" {% if form.get('language', 'en') == 'en' %}selected{% endif %}>English</option>
+                <option value="fr" {% if form.get('language') == 'fr' %}selected{% endif %}>French</option>
+                <option value="he" {% if form.get('language') == 'he' %}selected{% endif %}>Hebrew</option>
+            </select>
+        </label>
+    </div>
+
+    <fieldset>
+        <legend>Communication Channels (order = priority)</legend>
+        <p><small>Check channels to enable, drag to reorder priority. Top = tried first.</small></p>
+        <div id="channel-list" class="channel-priority-list" data-current="{{ form.get('communication_modes', '[\"whatsapp\"]') }}">
+        </div>
+        <input type="hidden" name="communication_modes" id="communication-modes-json" value='["whatsapp"]'>
+    </fieldset>
+
+    <div class="form-actions">
+        <button type="submit">Create Team Member</button>
+        <a href="{{ base_path }}/team" role="button" class="secondary outline">Cancel</a>
+    </div>
+</form>
+{% endblock %}

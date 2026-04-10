@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}Team Members - Sample App{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Team Members</h2>
+    <a href="{{ base_path }}/team/new" role="button">New Team Member</a>
+</div>
+
+<table role="grid">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Timezone</th>
+            <th>Language</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody id="team-rows">
+        {% include "partials/team_rows.html" %}
+    </tbody>
+</table>
+{% endblock %}

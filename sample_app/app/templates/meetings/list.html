@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block title %}Meetings - Sample App{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Meetings</h2>
+    <a href="{{ base_path }}/meetings/new" role="button">New Meeting</a>
+</div>
+
+<!-- State Summary Dashboard -->
+{% set state_counts = {} %}
+{% for m in meetings %}
+    {% if state_counts.update({m.state: state_counts.get(m.state, 0) + 1}) %}{% endif %}
+{% endfor %}
+<div class="stats-grid" style="margin-bottom: 1.5rem;">
+    <div class="stat-card">
+        <div class="stat-value">{{ meetings|length }}</div>
+        <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ state_counts.get('AWAITING_RESPONSES', 0) + state_counts.get('COLLECTING', 0) + state_counts.get('PENDING', 0) }}</div>
+        <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ state_counts.get('CONFIRMING', 0) + state_counts.get('AWAITING_CONFIRMATIONS', 0) + state_counts.get('SELECTING_SLOT', 0) }}</div>
+        <div class="stat-label">Confirming</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ state_counts.get('COMPLETED', 0) }}</div>
+        <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ state_counts.get('FAILED', 0) }}</div>
+        <div class="stat-label">Failed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ state_counts.get('CANCELLED', 0) }}</div>
+        <div class="stat-label">Cancelled</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-bar">
+    <select name="state" hx-get="{{ base_path }}/partials/meeting-rows" hx-target="#meeting-rows" hx-include="[name='requester']"
+            hx-push-url="{{ base_path }}/meetings">
+        <option value="">All States</option>
+        {% for s in states %}
+        <option value="{{ s }}" {% if s == current_state %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" name="requester" placeholder="Filter by customer..."
+           value="{{ current_requester or '' }}"
+           hx-get="{{ base_path }}/partials/meeting-rows" hx-target="#meeting-rows" hx-include="[name='state']"
+           hx-trigger="keyup changed delay:300ms"
+           hx-push-url="{{ base_path }}/meetings">
+</div>
+
+<table role="grid">
+    <thead>
+        <tr>
+            <th>Purpose</th>
+            <th>State</th>
+            <th>Participants</th>
+            <th>Window</th>
+            <th>Customer</th>
+        </tr>
+    </thead>
+    <tbody id="meeting-rows">
+        {% include "partials/meeting_rows.html" %}
+    </tbody>
+</table>
+{% endblock %}

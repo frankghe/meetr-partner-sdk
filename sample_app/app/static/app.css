@@ -1,0 +1,501 @@
+/* ============================================
+   Sample App — Styles
+   Combines layout + app-specific styles
+   ============================================ */
+
+/* === Layout: sidebar + content === */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+.admin-sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--pico-card-background-color);
+    border-right: 1px solid var(--pico-muted-border-color);
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-sidebar .brand {
+    padding: 0.5rem 1rem 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    margin-bottom: 0.5rem;
+}
+
+.admin-sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-sidebar nav ul li a {
+    display: block;
+    padding: 0.6rem 1rem;
+    text-decoration: none;
+    color: var(--pico-color);
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.admin-sidebar nav ul li a:hover {
+    background: var(--pico-primary-focus);
+}
+
+.admin-sidebar nav ul li a.active {
+    border-left-color: var(--pico-primary);
+    background: var(--pico-primary-focus);
+    font-weight: 600;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+}
+
+.admin-statusbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    background: var(--pico-card-background-color);
+    border-top: 1px solid var(--pico-muted-border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    font-size: 0.8rem;
+    gap: 1rem;
+    z-index: 100;
+}
+
+/* === Badges === */
+.badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-pending { background: #495057; color: #f8f9fa; }
+.badge-collecting { background: #1971c2; color: #e7f5ff; }
+.badge-awaiting_responses { background: #5c7cfa; color: #edf2ff; }
+.badge-selecting_slot { background: #7048e8; color: #f3f0ff; }
+.badge-needs_intervention { background: #f59e0b; color: #78350f; }
+.badge-confirming { background: #e8590c; color: #fff4e6; }
+.badge-awaiting_confirmations { background: #d9480f; color: #fff4e6; }
+.badge-completed { background: #2b8a3e; color: #ebfbee; }
+.badge-failed { background: #c92a2a; color: #fff5f5; }
+.badge-cancelled { background: #868e96; color: #f1f3f5; }
+
+/* Priority Badges */
+.badge-priority-1 { background: #d32f2f; color: #fff; }
+.badge-priority-2 { background: #f57c00; color: #fff; }
+.badge-priority-3 { background: #1976d2; color: #fff; }
+.badge-priority-4 { background: #7b1fa2; color: #fff; }
+.badge-priority-5 { background: #757575; color: #fff; }
+
+/* === Login Page === */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--pico-background-color);
+    padding: 2rem;
+}
+
+.login-card {
+    max-width: 500px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 8px;
+    background: var(--pico-card-background-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-card h1 {
+    text-align: center;
+    margin-bottom: 0.25rem;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: var(--pico-muted-color);
+    margin-bottom: 2rem;
+}
+
+/* === Alerts === */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-error {
+    background: #ffebee;
+    border: 1px solid #ef5350;
+    color: #c62828;
+}
+
+.alert-success {
+    background: #e8f5e9;
+    border: 1px solid #4caf50;
+    color: #2e7d32;
+}
+
+.close-alert {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    color: inherit;
+}
+
+/* === User info in sidebar === */
+.user-info {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: var(--pico-muted-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0.5rem;
+}
+
+/* === Link-styled button === */
+.link-button {
+    background: none;
+    border: none;
+    color: var(--pico-primary);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.link-button:hover {
+    color: var(--pico-primary-hover);
+}
+
+/* === Page Header === */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.page-header h2 {
+    margin-bottom: 0;
+}
+
+/* === Stats Grid (Dashboard) === */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--pico-primary);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--pico-muted-color);
+    margin-top: 0.25rem;
+}
+
+/* === Filter Bar === */
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: end;
+}
+
+.filter-bar select,
+.filter-bar input {
+    margin-bottom: 0;
+}
+
+/* === Meeting Meta === */
+.meeting-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--pico-muted-color);
+}
+
+/* === Selected Slot Display === */
+.selected-slot-display {
+    background: #e3f2fd;
+    border: 1px solid #42a5f5;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.selected-slot-display h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1565c0;
+}
+
+/* === Action Bar === */
+.action-bar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.action-bar form { margin: 0; }
+.action-bar button { margin: 0; }
+
+/* === Participant Grid === */
+.participant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.participant-card {
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.participant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.participant-details {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.participant-details > div {
+    margin-bottom: 0.25rem;
+}
+
+.participant-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.participant-actions button.small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+/* === Workflow Guide === */
+.workflow-guide {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem;
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+}
+
+.workflow-step {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    background: #e0e0e0;
+    color: #616161;
+    white-space: nowrap;
+}
+
+.workflow-step.active {
+    background: var(--pico-primary);
+    color: #fff;
+    font-weight: bold;
+}
+
+.workflow-step.completed {
+    background: #4caf50;
+    color: #fff;
+}
+
+.workflow-arrow {
+    color: var(--pico-muted-color);
+}
+
+/* === Participant Row (create form) === */
+.participant-row {
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.remove-participant {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: #ef5350;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    line-height: 1;
+}
+
+/* === Event Log === */
+.event-log {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 6px;
+    padding: 0.5rem;
+    background: #fafafa;
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.event-entry {
+    padding: 0.25rem 0.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.event-entry:last-child { border-bottom: none; }
+
+.event-time { color: #999; flex-shrink: 0; }
+.event-type { font-size: 0.7rem; flex-shrink: 0; }
+.event-data { word-break: break-all; }
+
+/* === Channel Priority Selector === */
+.channel-priority-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: 320px;
+}
+
+.channel-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--pico-muted-border-color, #ccc);
+    border-radius: 4px;
+    background: var(--pico-card-background-color, #fff);
+    user-select: none;
+    margin-bottom: 0;
+}
+
+.channel-item.dragging { opacity: 0.4; }
+
+.channel-item .drag-handle {
+    color: #999;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: grab;
+}
+
+.channel-item .drag-handle:active { cursor: grabbing; }
+.channel-item input[type="checkbox"] { margin: 0; width: auto; }
+.channel-item small { color: #999; margin-left: 0.25rem; }
+
+.badge-channel {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    background: var(--pico-primary-background, #1095c1);
+    color: #fff;
+    margin-right: 0.25rem;
+}
+
+/* Small action buttons */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Data table */
+.data-table {
+    width: 100%;
+    font-size: 0.85rem;
+}
+
+/* Progress notes */
+.progress-notes {
+    font-size: 0.85rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .admin-layout {
+        flex-direction: column;
+    }
+    .admin-sidebar {
+        width: 100%;
+        min-width: unset;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--pico-muted-border-color);
+    }
+    .admin-sidebar nav ul { display: flex; }
+    .admin-sidebar nav ul li a {
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+    }
+    .admin-sidebar nav ul li a.active {
+        border-left-color: transparent;
+        border-bottom-color: var(--pico-primary);
+    }
+}

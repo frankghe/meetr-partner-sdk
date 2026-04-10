@@ -1,0 +1,15 @@
+{% if meeting is defined and meeting.progress_notes %}
+{% for note in meeting.progress_notes|reverse %}
+<div class="event-entry event-progress">
+    <span class="event-time">{{ note.split(']')[0].split('T')[-1][:8] if ']' in note else '--:--:--' }}</span>
+    <span class="event-type badge">progress</span>
+    <span class="event-data">{{ note.split('] ')[-1] if '] ' in note else note }}</span>
+</div>
+{% endfor %}
+{% else %}
+<div class="event-entry event-info">
+    <span class="event-time">--:--:--</span>
+    <span class="event-type badge">info</span>
+    <span class="event-data">Waiting for events...</span>
+</div>
+{% endif %}

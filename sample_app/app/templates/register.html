@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register - Sample App</title>
+    <link rel="stylesheet" href="{{ base_path }}/static/pico.min.css">
+    <link rel="stylesheet" href="{{ base_path }}/static/app.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1>Create Account</h1>
+            <p class="login-subtitle">Meetr Partner Integration Example</p>
+
+            {% if error %}
+            <div class="alert alert-error" role="alert">
+                {{ error }}
+                <button class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+            {% endif %}
+
+            <form method="post" action="{{ base_path }}/register">
+                <label for="display_name">Display Name</label>
+                <input type="text" name="display_name" id="display_name" placeholder="Jane Smith" required autofocus>
+
+                <label for="company_name">Company Name</label>
+                <input type="text" name="company_name" id="company_name" placeholder="Acme Inc." required>
+
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="you@example.com" required>
+
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required minlength="4">
+
+                <label for="password_confirm">Confirm Password</label>
+                <input type="password" name="password_confirm" id="password_confirm" required minlength="4">
+
+                <button type="submit">Create Account</button>
+            </form>
+            <p class="register-link">Already have an account? <a href="{{ base_path }}/login">Login</a></p>
+        </div>
+    </div>
+</body>
+</html>
