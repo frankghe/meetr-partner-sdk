@@ -1,6 +1,6 @@
 # Meetr Partner SDK
 
-Everything you need to integrate with the [Meetr](https://meetr.io) meeting scheduling API.
+Everything you need to integrate with the [Meetr](https://meetr.io) meeting assistant API.
 
 ## Contents
 
