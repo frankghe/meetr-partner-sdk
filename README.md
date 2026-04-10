@@ -46,7 +46,7 @@ See `sample_app/README.md` for full setup instructions.
 
 - **Human-readable:** `docs/integration_guide.md`
 - **Machine-readable:** `docs/openapi.yaml` — import into Swagger UI, Postman, or any OpenAPI-compatible tool
-- **Live docs:** Available at `/redoc` and `/docs` on a running Meetr instance
+- **Live docs:** [API Explorer](https://meetr.aigent.biz/api/docs) | [ReDoc](https://meetr.aigent.biz/api/redoc)
 
 ## Rate Limits
 
