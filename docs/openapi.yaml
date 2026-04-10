@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Meeting Manager
+  title: Meetr - AI Meeting Assistant
   description: Meetr automates meeting scheduling by contacting participants, collecting
     availability through natural conversations (SMS, WhatsApp, voice), and selecting
     optimal meeting times.
