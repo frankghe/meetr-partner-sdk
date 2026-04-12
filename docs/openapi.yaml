@@ -789,8 +789,113 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /webhooks/partner-chat/inbound:
+    post:
+      tags:
+      - Partner Chat
+      summary: Send inbound chat message
+      description: 'Forward a participant''s chat message to Meetr for processing.
+
+
+        Use this endpoint to relay messages from your chat interface into an active
+        Meetr scheduling conversation. Meetr processes the message (e.g. extracting
+        availability) and returns a response to relay back to the participant.
+
+
+        **Authentication:** Sign the raw JSON request body with HMAC-SHA256 using
+        your shared webhook secret. Include the signature in the `X-Partner-Signature`
+        header as `sha256=<hex-digest>`.
+
+
+        **Routing:** Meetr resolves the participant via `external_participant_id`.
+        If the participant has no active session, the endpoint returns an error.'
+      operationId: partner_chat_inbound_webhooks_partner_chat_inbound_post
+      parameters:
+      - name: X-Partner-Signature
+        in: header
+        required: true
+        schema:
+          type: string
+          description: 'HMAC-SHA256 signature of the raw request body: sha256=<hex-digest>'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartnerChatInboundRequest'
+        required: true
+      responses:
+        '200':
+          description: Message processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerChatInboundResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - ApiKeyAuth: []
 components:
   schemas:
+    PartnerChatInboundRequest:
+      properties:
+        partner_id:
+          type: string
+          title: Partner Id
+          description: Your partner identifier
+        external_participant_id:
+          type: string
+          title: External Participant Id
+          description: Your system's unique identifier for the participant
+        message:
+          type: string
+          title: Message
+          description: The participant's chat message text
+      type: object
+      required:
+      - partner_id
+      - external_participant_id
+      - message
+      title: PartnerChatInboundRequest
+      description: Inbound chat message from a partner's chat system.
+    PartnerChatInboundResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Whether the message was processed successfully
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+          description: Active conversation session ID
+        response_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Response Message
+          description: Reply message to send back to the participant
+        is_terminal:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Terminal
+          description: Whether this response ends the conversation
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+      type: object
+      required:
+      - success
+      title: PartnerChatInboundResponse
+      description: Response from processing an inbound partner chat message.
     ApiMeta:
       properties:
         total:
@@ -1886,6 +1991,8 @@ tags:
   description: Subscribe to real-time event notifications
 - name: Keys
   description: API key rotation and management
+- name: Partner Chat
+  description: Send and receive messages via partner chat integrations
 - name: Health
   description: Liveness and readiness probes
 - name: Registration
