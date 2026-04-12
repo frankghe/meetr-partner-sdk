@@ -55,19 +55,17 @@ API keys are scoped to your partner account. You can only access meetings and da
 
 The `X-API-Key` header authentication requirement is also formally documented in the OpenAPI spec (`docs/openapi.yaml`) under `components.securitySchemes.ApiKeyAuth`. All endpoints except `/health`, `/health/detailed`, and `/api/partners/register` carry a global security requirement in the spec.
 
-### Rate Limits
+### Quota
 
-All authenticated endpoints are rate-limited per partner (or per customer when `X-Customer-Id` is provided).
+All API calls consume tokens from your partner's quota allocation. Quotas are configured per partner by the administrator.
 
-| Scope | Default Limit | Description |
-|-------|--------------|-------------|
-| General | 100 requests/min | Applies to all authenticated endpoints |
-| Meeting creation | 20 requests/min | `POST /api/meetings` only |
-| Key rotation | 5 requests/hour | `POST /api/keys/rotate` only |
+| Field | Description |
+|-------|-------------|
+| `total_tokens` | Tokens available per period |
+| `renewal_interval` | How often tokens reset: `daily`, `weekly`, `monthly`, or `custom_days` |
+| `valid_until` | When the quota plan expires (null = no expiry) |
 
-#### Endpoint Weights
-
-Expensive operations consume multiple tokens from the general rate limit bucket per request. This means a partner with a 100 RPM general limit can make 100 simple GET requests per minute, but only 10 meeting creation requests (each costing 10 tokens).
+**Endpoint token weights:**
 
 | Endpoint | Weight | Rationale |
 |----------|--------|-----------|
@@ -78,9 +76,33 @@ Expensive operations consume multiple tokens from the general rate limit bucket 
 | `POST /api/meetings/{id}/outreach/{pid}/start` | 3 | Initiates real participant outreach |
 | All other endpoints | 1 | Default weight |
 
-When a limit is exceeded, the API returns `429 Too Many Requests` with a `Retry-After` header indicating how many seconds to wait. The `Retry-After` value scales with the endpoint weight.
+When quota is exhausted, the API returns `429 Too Many Requests` with:
+```json
+{"error": "quota_exceeded", "message": "Quota exhausted. Resets at 2026-05-01T00:00:00Z."}
+```
 
-Customer-specific rate limits can be configured via the `/api/customers` endpoints and override partner defaults when set. Endpoint weights are system-defined and not configurable per partner.
+**Quota API endpoints:**
+- `GET /api/quota` — your current period summary (total, consumed, remaining)
+- `GET /api/quota/customers` — consumption breakdown by customer
+- `GET /api/quota/customers/{id}` — specific customer's consumption
+- `GET /api/quota/history` — past period summaries
+
+### Burst Rate Limits
+
+In addition to quotas, all endpoints are subject to per-minute burst rate limits to protect infrastructure.
+
+| Scope | Default Limit | Description |
+|-------|--------------|-------------|
+| General | 100 requests/min | Applies to all authenticated endpoints (weighted) |
+| Meeting creation | 20 requests/min | `POST /api/meetings` only |
+| Key rotation | 5 requests/hour | `POST /api/keys/rotate` only |
+
+Burst limits use the same endpoint weights as quotas. When exceeded, the API returns `429 Too Many Requests` with:
+```json
+{"error": "rate_limit_exceeded", "message": "Rate limit exceeded. Retry after 2 seconds."}
+```
+
+Customer-specific burst limits can be configured via the `/api/customers` endpoints and override partner defaults when set.
 
 ### Customer Scoping (Multi-Tenant)
 
