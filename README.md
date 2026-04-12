@@ -7,7 +7,6 @@ Everything you need to integrate with the [Meetr](https://meetr.io) meeting assi
 | Directory | Description |
 |-----------|-------------|
 | `docs/integration_guide.md` | Full API reference — authentication, endpoints, webhooks, error codes |
-| `docs/openapi.yaml` | OpenAPI 3.1 specification (14 public endpoints) |
 | `sample_app/` | Complete working partner application (Python/FastAPI) |
 
 ## Quick Start
@@ -45,8 +44,7 @@ See `sample_app/README.md` for full setup instructions.
 ## API Documentation
 
 - **Human-readable:** `docs/integration_guide.md`
-- **Machine-readable:** `docs/openapi.yaml` — import into Swagger UI, Postman, or any OpenAPI-compatible tool
-- **Live docs:** [API Explorer](https://meetr.aigent.biz/docs) | [ReDoc](https://meetr.aigent.biz/redoc)
+- **Interactive API docs:** [API Explorer](https://meetr.aigent.biz/docs) | [ReDoc](https://meetr.aigent.biz/redoc)
 
 ## Rate Limits
 

@@ -53,7 +53,7 @@ curl -H "X-API-Key: mk_abc123..." \
 
 API keys are scoped to your partner account. You can only access meetings and data belonging to your partner.
 
-The `X-API-Key` header authentication requirement is also formally documented in the OpenAPI spec (`docs/openapi.yaml`) under `components.securitySchemes.ApiKeyAuth`. All endpoints except `/health`, `/health/detailed`, and `/api/partners/register` carry a global security requirement in the spec.
+All endpoints except `/health`, `/health/detailed`, and `/api/partners/register` require the `X-API-Key` header.
 
 ### Quota
 
@@ -612,9 +612,9 @@ assert hmac.compare_digest(expected, request.headers["X-Meetr-Signature"])
 
 ### Inbound messages (your chat → Meetr)
 
-Forward participant replies to Meetr's inbound webhook service:
+Forward participant replies to Meetr:
 
-**POST** `{meetr_api_url}/webhooks/partner-chat/inbound`
+**POST** `/api/partner/chat-webhook/inbound`
 
 ```json
 {
@@ -761,14 +761,8 @@ The public partner-facing API specification is available in multiple formats. In
 | Format | Location |
 |--------|----------|
 | Interactive explorer | `/docs` (Swagger UI) |
+| Alternative explorer | `/redoc` (ReDoc) |
 | JSON spec | `/openapi.json` |
-| Versioned YAML | `docs/openapi.yaml` (in repository) |
-
-The YAML spec is regenerated with:
-
-```bash
-python scripts/export_openapi.py
-```
 
 ---
 
