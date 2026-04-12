@@ -537,7 +537,7 @@ paths:
 
         | `customer_id` | string | no | Associate with a customer |
 
-        | `timezone` | string | no | IANA timezone (e.g. `America/New_York`) |
+        | `timezone` | string | no | IANA timezone or UTC offset (e.g. `America/New_York`, `UTC+7`) |
 
         | `language` | string | no | Conversation language: `en`, `fr`, `he` (default:
         `en`) |
@@ -902,10 +902,11 @@ components:
         timezone:
           type: string
           title: Timezone
-          description: IANA timezone identifier
+          description: IANA timezone identifier or UTC offset (e.g. "UTC+7", "UTC-05:00"). UTC offsets are normalized to Etc/GMT equivalents.
           examples:
           - UTC
           - America/New_York
+          - UTC+7
         confidence:
           type: number
           maximum: 1.0
@@ -1015,9 +1016,10 @@ components:
         timezone:
           type: string
           title: Timezone
-          description: Default IANA timezone for the meeting
+          description: Default timezone for the meeting — IANA name or UTC offset (e.g. "UTC+7", "UTC-05:00"). UTC offsets are normalized to Etc/GMT equivalents.
           examples:
           - America/New_York
+          - UTC+7
         max_scheduling_deadline:
           anyOf:
           - type: string
@@ -1203,7 +1205,7 @@ components:
           - type: string
           - type: 'null'
           title: Timezone
-          description: IANA timezone
+          description: IANA timezone or UTC offset (e.g. "UTC+7", "UTC-05:00")
           examples:
           - America/New_York
         language:
@@ -1527,9 +1529,10 @@ components:
           - type: string
           - type: 'null'
           title: Timezone
-          description: Participant's IANA timezone (overrides meeting timezone)
+          description: Participant's timezone — IANA name or UTC offset (overrides meeting timezone)
           examples:
           - Europe/Paris
+          - UTC+7
         language:
           type: string
           title: Language
@@ -1816,7 +1819,7 @@ components:
           - type: string
           - type: 'null'
           title: Timezone
-          description: IANA timezone
+          description: IANA timezone or UTC offset (e.g. "UTC+7", "UTC-05:00")
         language:
           anyOf:
           - type: string

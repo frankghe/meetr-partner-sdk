@@ -747,7 +747,7 @@ python scripts/export_openapi.py
 | `context` | string | yes | Additional context for the conversational agent |
 | `scheduling_window_start` | string | yes | Earliest date/time (ISO 8601) |
 | `scheduling_window_end` | string | yes | Latest date/time (ISO 8601) |
-| `timezone` | string | yes | Default IANA timezone |
+| `timezone` | string | yes | Default timezone — IANA name (e.g. `"America/New_York"`) or UTC offset (e.g. `"UTC+7"`, `"UTC-05:00"`) |
 | `meeting_duration_minutes` | integer | yes | Meeting length in minutes |
 | `daily_start_time` | string | no | Earliest daily time (HH:MM), e.g. `"09:00"` |
 | `daily_end_time` | string | no | Latest daily time (HH:MM), e.g. `"17:00"` |
@@ -768,7 +768,7 @@ python scripts/export_openapi.py
 | `last_name` | string | yes | Participant's last name |
 | `phone_number` | string | conditional | E.164 format phone number. Required unless using `partner_chat` only |
 | `priority` | integer | no | 1=optional, 2=low, 3=medium (default), 4=high, 5=mandatory |
-| `timezone` | string | no | Participant's IANA timezone (overrides meeting timezone) |
+| `timezone` | string | no | Participant's timezone — IANA name or UTC offset (overrides meeting timezone) |
 | `language` | string | no | Conversation language: `en`, `fr`, `he` (default: `en`) |
 | `communication_modes` | array | no | Ordered list of channels: `"sms"`, `"whatsapp"`, `"voice"`, `"partner_chat"` |
 | `external_participant_id` | string | no | Partner's identifier for this participant (required with `partner_chat`) |
@@ -776,6 +776,20 @@ python scripts/export_openapi.py
 | `availability_slots` | array | conditional | Pre-known slots (required when `skip_outreach` is `true`) |
 
 **Calendar-linked participants:** When your app already knows a participant's availability (e.g., from calendar sync), set `skip_outreach: true` and provide their `availability_slots`. Meetr will use the provided slots directly for scheduling.
+
+### Timezone formats
+
+All `timezone` fields (meeting-level, participant-level, and per-slot) accept two formats:
+
+| Format | Example | Description |
+|--------|---------|-------------|
+| IANA timezone name | `"America/New_York"`, `"Asia/Tokyo"`, `"UTC"` | Standard IANA/Olson timezone identifiers. Recommended for regions that observe DST. |
+| UTC offset | `"UTC+7"`, `"UTC+07"`, `"UTC-5"`, `"UTC-05:00"` | Fixed offset from UTC. Converted internally to IANA `Etc/GMT` equivalents. Case-insensitive. |
+
+**Notes:**
+- UTC offsets with non-zero minutes (e.g. `"UTC+05:30"`) are **not supported** — use the IANA name instead (e.g. `"Asia/Kolkata"`).
+- UTC offset signs follow the common convention: `UTC+7` means 7 hours **ahead** of UTC.
+- Zero-padded hours are accepted: `"UTC+07"` is equivalent to `"UTC+7"`.
 
 ---
 
