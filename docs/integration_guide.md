@@ -65,9 +65,22 @@ All authenticated endpoints are rate-limited per partner (or per customer when `
 | Meeting creation | 20 requests/min | `POST /api/meetings` only |
 | Key rotation | 5 requests/hour | `POST /api/keys/rotate` only |
 
-When a limit is exceeded, the API returns `429 Too Many Requests` with a `Retry-After` header indicating how many seconds to wait.
+#### Endpoint Weights
 
-Customer-specific rate limits can be configured via the `/api/customers` endpoints and override partner defaults when set.
+Expensive operations consume multiple tokens from the general rate limit bucket per request. This means a partner with a 100 RPM general limit can make 100 simple GET requests per minute, but only 10 meeting creation requests (each costing 10 tokens).
+
+| Endpoint | Weight | Rationale |
+|----------|--------|-----------|
+| `POST /api/meetings` | 10 | Triggers LLM outreach for all participants |
+| `POST /api/meetings/{id}/intervene` | 5 | LLM inference call |
+| `POST /api/meetings/{id}/cancel` | 3 | Multiple external API calls |
+| `POST /api/meetings/{id}/notify` | 3 | External API calls per participant |
+| `POST /api/meetings/{id}/outreach/{pid}/start` | 3 | Initiates real participant outreach |
+| All other endpoints | 1 | Default weight |
+
+When a limit is exceeded, the API returns `429 Too Many Requests` with a `Retry-After` header indicating how many seconds to wait. The `Retry-After` value scales with the endpoint weight.
+
+Customer-specific rate limits can be configured via the `/api/customers` endpoints and override partner defaults when set. Endpoint weights are system-defined and not configurable per partner.
 
 ### Customer Scoping (Multi-Tenant)
 
