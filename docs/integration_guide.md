@@ -507,7 +507,99 @@ Supports `Last-Event-ID` header for resuming after disconnection.
 
 ---
 
-## 10. Response Format & Error Handling
+## 10. Partner Chat Channel
+
+Use the partner chat channel to route participant conversations through your own messaging system instead of SMS/WhatsApp.
+
+### Register your chat webhook
+
+**PUT** `/api/partner/chat-webhook`
+
+```json
+{
+  "url": "https://your-app.com/meetr/chat",
+  "secret": "your-hmac-secret"
+}
+```
+
+The `url` must use HTTPS. The `secret` is used bidirectionally for HMAC-SHA256 signing — Meetr signs outbound messages to you, and you sign inbound messages to Meetr.
+
+### Create a meeting with partner chat participants
+
+Include `"partner_chat"` in `communication_modes` and provide an `external_participant_id` instead of a phone number:
+
+```json
+{
+  "purpose": "Q1 Planning",
+  "context": "Quarterly planning session",
+  "scheduling_window_start": "2026-03-20T00:00:00Z",
+  "scheduling_window_end": "2026-03-27T23:59:59Z",
+  "timezone": "America/New_York",
+  "meeting_duration_minutes": 60,
+  "participants": [
+    {
+      "first_name": "Alice",
+      "last_name": "Martin",
+      "communication_modes": ["partner_chat"],
+      "external_participant_id": "your-user-id-123"
+    }
+  ]
+}
+```
+
+When using `partner_chat` only, `phone_number` is not required. For mixed modes (e.g. `["partner_chat", "whatsapp"]`), `phone_number` is still required.
+
+### Outbound messages (Meetr → your chat)
+
+Meetr POSTs outbound messages to your registered webhook URL:
+
+```json
+{
+  "external_participant_id": "your-user-id-123",
+  "message": {
+    "text": "Hi Alice! I'm helping schedule a Q1 Planning meeting...",
+    "buttons": [
+      {"id": "1", "label": "Monday 2pm"},
+      {"id": "2", "label": "Tuesday 10am"}
+    ]
+  },
+  "timestamp": "2026-03-20T10:00:00Z"
+}
+```
+
+The payload is signed with HMAC-SHA256. Verify the `X-Meetr-Signature` header:
+
+```python
+import hmac, hashlib
+expected = "sha256=" + hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+assert hmac.compare_digest(expected, request.headers["X-Meetr-Signature"])
+```
+
+### Inbound messages (your chat → Meetr)
+
+Forward participant replies to Meetr's callr service:
+
+**POST** `{callr_url}/webhooks/partner-chat/inbound`
+
+```json
+{
+  "partner_id": "your-partner-id",
+  "external_participant_id": "your-user-id-123",
+  "message": "I'm available Monday at 2pm"
+}
+```
+
+Sign the request with HMAC-SHA256 using the same shared secret. Include the signature in the `X-Partner-Signature` header.
+
+### Removing the webhook
+
+**DELETE** `/api/partner/chat-webhook`
+
+Removes the partner chat configuration. Participants with `partner_chat` mode will not be contactable until a new webhook is registered.
+
+---
+
+## 11. Response Format & Error Handling
 
 ### Success envelope
 
@@ -552,7 +644,7 @@ Errors return a structured envelope:
 
 ---
 
-## 11. Observability
+## 12. Observability
 
 ### Health checks
 
@@ -590,7 +682,7 @@ All API responses include an `X-Correlation-ID` header. Pass this header in your
 
 ---
 
-## 12. Meeting Reference Codes
+## 13. Meeting Reference Codes
 
 Every meeting is assigned a short, user-friendly **reference code** at creation time (e.g., `M-7K3X`). This code:
 
@@ -602,7 +694,7 @@ Every meeting is assigned a short, user-friendly **reference code** at creation 
 
 ---
 
-## 13. Participant Question Sessions
+## 14. Participant Question Sessions
 
 Participants can send unsolicited messages (SMS/WhatsApp) to ask about their meeting status. Meetr handles this automatically:
 
@@ -627,7 +719,7 @@ Participants can only ask about meetings they are part of (as a participant or a
 
 ---
 
-## 14. OpenAPI Specification
+## 15. OpenAPI Specification
 
 The public partner-facing API specification is available in multiple formats. Internal and admin endpoints are excluded from the documentation.
 
@@ -645,7 +737,7 @@ python scripts/export_openapi.py
 
 ---
 
-## 15. Create Meeting Request — Field Reference
+## 16. Create Meeting Request — Field Reference
 
 ### Top-level fields
 
@@ -674,11 +766,12 @@ python scripts/export_openapi.py
 |-------|------|----------|-------------|
 | `first_name` | string | yes | Participant's first name |
 | `last_name` | string | yes | Participant's last name |
-| `phone_number` | string | yes | E.164 format phone number |
+| `phone_number` | string | conditional | E.164 format phone number. Required unless using `partner_chat` only |
 | `priority` | integer | no | 1=optional, 2=low, 3=medium (default), 4=high, 5=mandatory |
 | `timezone` | string | no | Participant's IANA timezone (overrides meeting timezone) |
 | `language` | string | no | Conversation language: `en`, `fr`, `he` (default: `en`) |
-| `communication_modes` | array | no | Ordered list of channels: `"sms"`, `"whatsapp"`, `"voice"` |
+| `communication_modes` | array | no | Ordered list of channels: `"sms"`, `"whatsapp"`, `"voice"`, `"partner_chat"` |
+| `external_participant_id` | string | no | Partner's identifier for this participant (required with `partner_chat`) |
 | `skip_outreach` | boolean | no | Skip conversational outreach (default: `false`). Requires `availability_slots` |
 | `availability_slots` | array | conditional | Pre-known slots (required when `skip_outreach` is `true`) |
 
@@ -686,7 +779,7 @@ python scripts/export_openapi.py
 
 ---
 
-## 16. Test App
+## 17. Test App
 
 Meetr includes a browser-based test harness at `/app/` on the server. Use it to:
 
@@ -697,7 +790,7 @@ Meetr includes a browser-based test harness at `/app/` on the server. Use it to:
 
 ---
 
-## 17. Best Practices
+## 18. Best Practices
 
 - **Use webhooks** for production integrations — polling is unnecessary for terminal events
 - **If polling**, use 30-60 second intervals — the scheduling lifecycle is measured in hours, not seconds
