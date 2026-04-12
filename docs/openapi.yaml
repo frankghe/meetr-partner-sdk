@@ -229,7 +229,7 @@ paths:
       description: 'Cancel a meeting and stop all active outreaches.
 
 
-        Active callr sessions are terminated and participants are notified of the
+        Active sessions are terminated and participants are notified of the
 
         cancellation. The optional `reason` field is stored and included in notifications.
 
@@ -1099,8 +1099,8 @@ components:
           - type: string
           - type: 'null'
           title: Llm Type
-          description: LLM adapter routing key for callr sessions (e.g. 'replay' for
-            deterministic E2E tests)
+          description: LLM adapter routing key for conversation sessions (e.g. 'replay'
+            for deterministic E2E tests)
       type: object
       required:
       - purpose
@@ -1612,12 +1612,12 @@ components:
           - type: 'null'
           title: Confirmation Status
           description: 'Confirmation response: ''confirmed'', ''declined'', or null'
-        callr_session_id:
+        session_id:
           anyOf:
           - type: string
           - type: 'null'
-          title: Callr Session Id
-          description: Active callr conversation session ID
+          title: Session Id
+          description: Active conversation session ID
         channel:
           anyOf:
           - type: string

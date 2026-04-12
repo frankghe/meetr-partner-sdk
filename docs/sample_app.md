@@ -297,7 +297,7 @@ Without `--auto-setup`, the API key and customer ID must be set via environment 
 
 - No multi-customer management (the app works within one customer)
 - No admin API access (only partner-facing endpoints)
-- No callr-level endpoints (internal service-to-service)
+- No internal service-to-service endpoints
 - No direct Meetr database access
 - No automated test execution (this is a showcase/demo tool)
 

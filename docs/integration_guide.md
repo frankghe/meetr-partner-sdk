@@ -612,9 +612,9 @@ assert hmac.compare_digest(expected, request.headers["X-Meetr-Signature"])
 
 ### Inbound messages (your chat → Meetr)
 
-Forward participant replies to Meetr's callr service:
+Forward participant replies to Meetr's inbound webhook service:
 
-**POST** `{callr_url}/webhooks/partner-chat/inbound`
+**POST** `{meetr_api_url}/webhooks/partner-chat/inbound`
 
 ```json
 {
