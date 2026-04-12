@@ -15,7 +15,7 @@ Everything you need to integrate with the [Meetr](https://meetr.io) meeting assi
 ### 1. Register as a partner
 
 ```bash
-curl -X POST https://meetr.example.com/api/partners/register \
+curl -X POST https://meetr.aigent.biz/api/partners/register \
   -H "Content-Type: application/json" \
   -d '{"name": "My Company", "contact_email": "dev@mycompany.com"}'
 ```
@@ -28,7 +28,7 @@ All API requests (except registration) require the key in the `X-API-Key` header
 
 ```bash
 curl -H "X-API-Key: mk_abc123..." \
-     https://meetr.example.com/api/meetings
+     https://meetr.aigent.biz/api/meetings
 ```
 
 ### 3. Run the sample app

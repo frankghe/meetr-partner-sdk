@@ -25,7 +25,7 @@ Meetr automates meeting scheduling by contacting participants, collecting their 
 Register as a partner to receive an API key:
 
 ```bash
-curl -X POST https://meetr.example.com/api/partners/register \
+curl -X POST https://meetr.aigent.biz/api/partners/register \
   -H "Content-Type: application/json" \
   -d '{"name": "My Company", "contact_email": "dev@mycompany.com"}'
 ```
@@ -48,7 +48,7 @@ All API requests (except registration) require an API key in the `X-API-Key` hea
 
 ```bash
 curl -H "X-API-Key: mk_abc123..." \
-     https://meetr.example.com/api/meetings
+     https://meetr.aigent.biz/api/meetings
 ```
 
 API keys are scoped to your partner account. You can only access meetings and data belonging to your partner.
@@ -76,7 +76,7 @@ If you manage multiple customers, include the `X-Customer-Id` header to scope op
 ```bash
 curl -H "X-API-Key: mk_abc123..." \
      -H "X-Customer-Id: cust-001" \
-     https://meetr.example.com/api/meetings
+     https://meetr.aigent.biz/api/meetings
 ```
 
 **Behavior:**
@@ -91,8 +91,8 @@ Manage customers explicitly via the `/api/customers` endpoints to set names and 
 
 Meetr provides an interactive API explorer powered by Swagger UI:
 
-- **Swagger UI**: `https://meetr.example.com/docs`
-- **OpenAPI JSON**: `https://meetr.example.com/openapi.json`
+- **Swagger UI**: `https://meetr.aigent.biz/docs`
+- **OpenAPI JSON**: `https://meetr.aigent.biz/openapi.json`
 
 Use the Swagger UI to browse all public endpoints, view request/response schemas, and try requests interactively. Internal and admin endpoints are not shown.
 
@@ -103,7 +103,7 @@ Use the Swagger UI to browse all public endpoints, view request/response schemas
 ### Step 1: Create a meeting
 
 ```bash
-curl -X POST https://meetr.example.com/api/meetings \
+curl -X POST https://meetr.aigent.biz/api/meetings \
   -H "X-API-Key: mk_abc123..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -158,11 +158,11 @@ Poll the meeting status or use SSE for real-time updates:
 ```bash
 # Poll
 curl -H "X-API-Key: mk_abc123..." \
-     https://meetr.example.com/api/meetings/{session_id}
+     https://meetr.aigent.biz/api/meetings/{session_id}
 
 # SSE (real-time)
 curl -N -H "X-API-Key: mk_abc123..." \
-     https://meetr.example.com/api/meetings/{session_id}/events
+     https://meetr.aigent.biz/api/meetings/{session_id}/events
 ```
 
 ### Step 3: Receive results
@@ -487,7 +487,7 @@ The native browser `EventSource` API does not support custom headers. Use a libr
 
 ```javascript
 const response = await fetch(
-  'https://meetr.example.com/api/meetings/{session_id}/events',
+  'https://meetr.aigent.biz/api/meetings/{session_id}/events',
   { headers: { 'X-API-Key': 'your-key' } }
 );
 
